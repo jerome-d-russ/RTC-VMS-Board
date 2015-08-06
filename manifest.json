@@ -1,0 +1,29 @@
+{
+  "name": "RTC VMS Board",
+  "version": "1.25",
+  "description": "Take an RTC query and populates a VMS Board.",
+  "background": { 
+  	"scripts": ["background.js"],
+		"persistent": false
+  },
+  "page_action" :
+  {
+    "default_icon" : "icon-19.png",
+    "default_title" : "Click to build the VMS Board!"
+  },
+  "web_accessible_resources": ["error_button.svg","pointing_finger.svg","refresh.svg","stop.svg"],
+	"options_page": "options.html",
+  "permissions" : [
+    "tabs",
+    "activeTab",
+		"http://*/*", 
+		"https://*/*",
+    "notifications"
+  ],
+  "icons" : {
+    "19" : "icon-19.png",
+    "48" : "icon-48.png",
+    "128" : "icon-128.png"
+  },
+  "manifest_version": 2
+}

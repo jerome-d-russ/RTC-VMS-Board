@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+	<meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+  <head><title>Extension Options</title></head>
+  <style>
+    table, th, td {
+      margin: 5px;
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 5px;
+    }
+    .checkbox {
+      text-align: center;
+    }
+    button {
+      padding: 5px;
+      margin: 5px;
+    }
+  </style>
+  <body>
+    <div id='URL'>
+    	RTC/Jazz.net Base URL: <input type='text' id='rtcURL'></input>
+    </div>
+    <table id='options'>
+      <tr>
+        <th>Option</td>
+        <th>Enabled</td>
+      </tr>
+      <tr>
+        <td>Points Indicator</td>
+        <td class='checkbox'><input type='checkbox' id='pointsIndicatorCheckbox'/></td>
+      </span>
+    </table>
+    <button id="saveButton">Save</button>
+    <span id="status" style="color:Red"></span>
+    <h2>Things to keep in mind:</h2>
+    	<ul>
+        <li>Bookmarking the VMS Board!
+          <ul>
+            <li>The URL will now modify the URL by adding &buildVMS when you build the VMS Board.</li>
+            <li>It will also be removed when you close the VMS Board.</li>
+            <li>If you bookmark and/or navigate to the &buildVMS version of the URL, the page will auto-build the VMS board when you go to it!</li>
+          </ul>
+        </li>
+    		<li>Keyboard Shortcuts!
+        	<ul>
+          	<li>ctrl + alt + d => Show dependencies for all cards.</li>
+            <li>ctrl + alt + p => Show percentages in column headers.</li>
+          </ul>
+        </li>
+    		<li>Start typing to filter the cards!
+        	<ul>
+          	<li>The entire text of the visible RTC VMS Board card is searched.</li>
+            <li>Press Escape to clear the filter!</li>
+          </ul>
+        </li>
+      	<li>RTC/jazz.net fields used (* indicates required):
+        	<ul>
+          	<li>*Id -> Story Number</li>
+            <li>*Summary</li>
+            <li>*Owned By</li>
+            <li>*Status -> Determines the column</li>
+            <li>*Story Points</li>
+            <li>Blocked -> If blocked, display stop sign</li>
+            <li>Depends On -> Shows an orange indicator highlighting that it is dependant on a card</li>
+            <li>Blocks -> Shows a blue indicator highlighting that it blocks a card</li>
+            <li>Planned For</li>
+            <li>Filed Against</li>
+          </ul>
+        </li>
+      </ul>
+  </body>
+  <script type="text/javascript" src="options.js"></script>
+</html>

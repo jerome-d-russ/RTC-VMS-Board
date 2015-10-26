@@ -102,12 +102,12 @@ chrome.runtime.onMessage.addListener(
 );
 
 if(!localStorage["version"]){
-  localStorage["version"] = "1.3";
+  localStorage["version"] = "1.26";
   chrome.tabs.create({url: "options.html"});
 }
 	
-if (localStorage["version"] != "1.3") {
-  localStorage["version"] = "1.3";
+if (localStorage["version"] != "1.26") {
+  localStorage["version"] = "1.26";
   chrome.notifications.create({
     type: "basic",
     title: "Build a Burndown Chart!!",

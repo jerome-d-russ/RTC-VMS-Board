@@ -28,14 +28,39 @@
         <th>Enabled</td>
       </tr>
       <tr>
-        <td>Points Indicator</td>
+        <td>Burndown Chart (Beta!)</td>
+        <td class='checkbox'><input type='checkbox' id='burndownCheckbox'/></td>
+      </tr>
+      <tr>
+        <td>No Points Indicator</td>
         <td class='checkbox'><input type='checkbox' id='pointsIndicatorCheckbox'/></td>
-      </span>
+      </tr>
+      <tr>
+        <td>RRC Fullscreen-inator (Beta!)</td>
+        <td class='checkbox'><input type='checkbox' id='rrcFullscreenCheckbox'/></td>
+      </tr>
     </table>
     <button id="saveButton">Save</button>
     <span id="status" style="color:Red"></span>
     <h2>Things to keep in mind:</h2>
     	<ul>
+        <li>*Beta* Build a Burndown Chart!
+          <ul>
+            <li>Go to options, select burndown chart checkbox, save.</li>
+            <li>When you build a VMS board, click the icon in the lower left.</li>
+            <li>The burndown currently assumes a two week iteration.</li>
+            <li>The dates are set based on the planned for field starting with the oldest and going to the newest, plus two weeks.</li>
+          </ul>
+        </li>
+        <li>*Beta* Go fullscreen in RRC!
+          <ul>
+            <li>Go to options, select RRC Fullscreen-inator checkbox, save.</li>
+            <li>When you are in an RRC card, the 'vms' icon should switch to a fullscreen icon.</li>
+            <li>Click the icon to enter in selection mode. Click the icon again to turn it off.</li>
+            <li>In selection mode, the yellow highlighted portion is what will go full screen when you click it.</li>
+            <li>Use the browser's full screen mode for more screen real estate (F11).</li>
+          </ul>
+        </li>
         <li>Bookmarking the VMS Board!
           <ul>
             <li>The URL will now modify the URL by adding &buildVMS when you build the VMS Board.</li>
@@ -65,7 +90,8 @@
             <li>Blocked -> If blocked, display stop sign</li>
             <li>Depends On -> Shows an orange indicator highlighting that it is dependant on a card</li>
             <li>Blocks -> Shows a blue indicator highlighting that it blocks a card</li>
-            <li>Planned For</li>
+            <li>Planned For -> Used to show iteration the work was planned for <b>Note:</b> Also used in the burndown chart's date logic</li>
+            <li>Resolution Date -> Used to populate data points in the burndown chart</li>
             <li>Filed Against</li>
           </ul>
         </li>

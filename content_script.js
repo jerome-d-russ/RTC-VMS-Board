@@ -6,6 +6,15 @@ chrome.runtime.sendMessage(JSON.stringify(msg), function(response) {
 	verifyItemsExist();
 });
 
+var burndownArray = {
+    "start": "",
+    "end": "",
+    "plannedPoints": 0,
+    "burndowns": [],
+    "storyCards": [],
+    "timeDomain": []
+  };
+
 function verifyItemsExist() {
 	(function waitForRows() {
 		if (typeof(document.getElementsByClassName("status-message")[0]) == 'undefined' || document.getElementsByClassName("status-message")[0].style.display == "block"){
@@ -106,6 +115,16 @@ function buildVMSBoard(){
 	if (columns.id && columns.owner && columns.pts && columns.summary && columns.status){		
 		buildBaseVMSDiv();
 		populateCards(columns);
+    if(vmsSettings.burndownIndicator == 'true'){
+      if (columns.pts && columns.plannedFor && columns.resolutionDate){
+        //build the chart & initial JSON structure!
+        buildBurndownData();
+        buildBurndownDiv();
+      } else {
+      	vmsSettings.burndownIndicator = 'false';
+        alert("You need the fields 'Story Points', 'Planned For' and 'Resolution Date' for the burndown chart!");
+      }
+    }
 		resize();	
 	}else{
 		var fields = ""
@@ -121,6 +140,196 @@ function buildVMSBoard(){
 			fields = fields + "\nStatus";
 		alert("Missing the following fields:" + fields);
 	}		
+};
+
+function buildBurndownData(){
+	burndownArray.start = getOldestPlannedFor(burndownArray.storyCards);
+	burndownArray.end = getNewestPlannedForPlusTwoWeeks(burndownArray.storyCards);
+	burndownArray.timeDomain = buildTimeDomainOldToNew(burndownArray.start,burndownArray.end);
+	burndownArray.burndowns = getBurndowns(burndownArray.storyCards, Number.parseInt(burndownArray.plannedPoints));
+	burndownArray.burndowns.unshift({
+		"date": burndownArray.start, 
+		"points": Number.parseInt(burndownArray.plannedPoints), 
+		"comment": "Start of Iteration!"
+	});
+	//get formatted current date
+	var currentDate = new Date();
+	if (currentDate.getDay() == 0){
+		currentDate.setDate(currentDate.getDate() + 1);
+	}
+	if (currentDate.getDay() == 6){
+		currentDate.setDate(currentDate.getDate() - 1);
+	}
+	var currentFormattedDate = getFormattedDate(currentDate.getMonth()+1, currentDate.getDate(), currentDate.getFullYear());
+	//Is the date there? If not, push current date
+		var found = false;
+		for(var j = 0; j < burndownArray.burndowns.length; j++) {
+		    if (burndownArray.burndowns[j].date == currentFormattedDate) {
+		      found = true;
+		      break;
+		    }
+		}
+		if (!found){
+			burndownArray.burndowns.push({
+				"date": currentFormattedDate, 
+				"points": burndownArray.burndowns[burndownArray.burndowns.length-1].points
+			});
+		}
+	console.log(JSON.stringify(burndownArray));
+};
+
+function getOldestPlannedFor(ba){
+	ba.sort(function(a, b) {
+    return a.plannedFor - b.PlannedFor;
+	});
+	//start with ba[0].plannedFor = Blue 2015 I18 (8.26)
+	var re = /\w+\W+(\d+)\W+\w+\W+\((\d+)\.(\d+)\)/
+  var m = re.exec(ba[0].plannedFor);
+//	var d = new Date(m[2] + "/" + m[3] + "/" + m[1]);//  "03-25-2015" -> Wed Mar 25 2015 00:00:00 GMT-0500 (Central Daylight Time)
+//  var n = d.toDateString(); //Thu Aug 27 2015
+  var startDate = getFormattedDate(m[2], m[3], m[1]);
+  //need to return "2015-Jul-29"
+	return startDate;
+};
+
+function getNewestPlannedForPlusTwoWeeks(ba){
+	ba.sort(function(a, b) {
+    return b.plannedFor - a.PlannedFor;
+	});
+	var re = /\w+\W+(\d+)\W+\w+\W+\((\d+)\.(\d+)\)/
+  var m = re.exec(ba[0].plannedFor);
+
+  var endDate = new Date(+new Date(m[2] + "/" + m[3] + "/" + m[1]) );
+  endDate.setDate(endDate.getDate()+13);
+
+	var endDateString = getFormattedDate(endDate.getMonth()+1, endDate.getDate(), endDate.getFullYear());
+	return endDateString;
+};
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+function getFormattedDate(month, day, year){
+	return year + "-" + months[(month-1)] + "-" + (day<10?"0"+day:day);
+};
+
+function buildTimeDomainOldToNew(start,end){
+	var re = /(\d+)-(\w+)-(\d+)/
+  var m = re.exec(start);
+  var checkDate = new Date(m[1], months.indexOf(m[2]), m[3])
+  var m = re.exec(end);
+  var endDate = new Date(m[1], months.indexOf(m[2]), m[3])
+  dates = [];
+  while(checkDate <= endDate){
+  	if(checkDate.getDay() > 0 && checkDate.getDay() < 6){
+	  	dates[dates.length] = getFormattedDate(checkDate.getMonth()+1, checkDate.getDate(), checkDate.getFullYear());
+		}
+  	checkDate.setDate(checkDate.getDate() + 1);
+  }
+  return dates;
+};
+
+function getBurndowns(storyCards, totPts){
+	var storyCardArray = storyCards.filter(function(sc){return sc.resolutionDate !== "None"});
+	storyCardArray.sort(function(a, b) {
+    return new Date(a.resolutionDate) - new Date(b.resolutionDate);
+	});
+	var burndowns = [];
+	for (var i = 0; i < storyCardArray.length; i++) {
+		var scDate = new Date(storyCardArray[i].resolutionDate);
+		if(scDate.getDay() == 0){
+			scDate.setDate(scDate.getDate() + 1);
+		}
+		if(scDate.getDay() == 6){
+			scDate.setDate(scDate.getDate() + 2);
+		}
+		//get formatted date
+		scFormattedDate = getFormattedDate(scDate.getMonth()+1, scDate.getDate(), scDate.getFullYear());
+		//if date not present, add date
+		var found = false;
+		for(var j = 0; j < burndowns.length; j++) {
+		    if (burndowns[j].date == scFormattedDate) {
+		    	burndowns[j].points += Number.parseInt(storyCardArray[i].storyPoints);
+		    	burndowns[j].comment += ", " + storyCardArray[i].story;
+		      found = true;
+		      break;
+		    }
+		}
+		if (!found){
+			burndowns[burndowns.length] = {"date": scFormattedDate, "points": Number.parseInt(storyCardArray[i].storyPoints), "comment": storyCardArray[i].story};
+		}
+	};
+	var pts = 0;
+	for (var i = 0; i < burndowns.length; i++) {
+		pts += Number.parseInt(burndowns[i].points);
+		burndowns[i].points = totPts - pts;
+	};
+	return burndowns;
+};
+
+function buildBurndownDiv(){
+	var vmsDiv = document.getElementById("vmsDiv");
+	
+	sbdLink = document.createElement("link");
+	sbdLink.href = chrome.extension.getURL("sbd.css");
+	sbdLink.type = "text/css";
+	sbdLink.rel = "stylesheet";
+	vmsDiv.appendChild(sbdLink);
+
+	var burndownDiv = document.createElement("div");
+	burndownDiv.id = "chart";
+	burndownDiv.style.width = "50px";
+	burndownDiv.style.height = "50px";
+	burndownDiv.style.position = "absolute";
+	burndownDiv.style.bottom = "5px";
+	burndownDiv.style.left = "5px";
+	burndownDiv.style.zIndex = "1";
+	burndownDiv.style.cursor = "pointer";
+	burndownDiv.style.border = "1px solid black";
+	burndownDiv.style.backgroundColor = "white";
+	burndownDiv.onclick = function(){
+		//if small, make large else make small
+		var config = {};
+		if (this.style.height == "50px"){
+			this.style.bottom = "5px";
+			this.style.top = "5px";
+			this.style.left = "5px";
+			this.style.right = "5px";
+			this.style.width = "auto";
+			this.style.height = "auto";
+			config = {
+				showGrid: false,
+				showComments: true, 
+				margin: {top: 30, right: 50, bottom: 30, left: 50},
+				width: document.getElementById("chart").clientWidth,
+				height: document.getElementById("chart").clientHeight
+			};
+		} else {
+			this.style.bottom = "5px";
+			this.style.top = "";
+			this.style.left = "5px";
+			this.style.right = "";
+			this.style.width = "50px";
+			this.style.height = "50px";
+			config = {
+				showGrid: false,
+				showComments: false, 
+				margin: {top:0,bottom:0,right:0,left:0},
+				width: document.getElementById("chart").clientWidth,
+				height: document.getElementById("chart").clientHeight
+			};
+		}
+		console.log(burndownArray);
+		var bda = JSON.parse(JSON.stringify(burndownArray));
+		SBD.render(bda, config); 
+	}	
+	vmsDiv.appendChild(burndownDiv);
+	var bda = JSON.parse(JSON.stringify(burndownArray));
+	SBD.render(bda, {
+		showGrid: false,
+		showComments: false, 
+		margin: {top:0,bottom:0,right:0,left:0},
+		width: document.getElementById("chart").clientWidth,
+		height: document.getElementById("chart").clientHeight
+	}); 
 };
 
 function populateCards(columns) {
@@ -142,6 +351,11 @@ function populateCards(columns) {
 			plannedFor = row.childNodes[columns.plannedFor].textContent;
 		}else{
 			plannedFor = "";
+		}
+		if (columns.resolutionDate){
+			resolutionDate = row.childNodes[columns.resolutionDate].textContent;
+		}else{
+			resolutionDate = "";
 		}
 		dependsOn = new Array();
 		if (columns.dependsOn){
@@ -170,7 +384,8 @@ function populateCards(columns) {
 							dependsOn,
 							blocks,
 							team,
-							plannedFor);
+							plannedFor,
+							resolutionDate);
 		if (!isNaN(parseInt(row.childNodes[columns.pts].textContent))){
 			totalPoints += parseInt(row.childNodes[columns.pts].textContent);
 		}
@@ -186,7 +401,7 @@ function populateCards(columns) {
 					
 };
 
-function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,plannedFor){
+function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,plannedFo,resolutionDate){
   var element;
   switch(status){
     case 'New':   
@@ -347,13 +562,13 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 
   ownerDiv = document.createElement("div");
   ownerDiv.className = "ownerName";
-	ownerDiv.style.float = "right";
+  ownerDiv.style.float = "right";
   ownerDiv.innerHTML = "<h6 style='margin-top:0px'>" + owner + "</h6>";
   card.appendChild(ownerDiv);
 
   storyDiv = document.createElement("div");
   storyDiv.className = "story";
-	storyDiv.style.clear = "both";
+  storyDiv.style.clear = "both";
   storyDiv.innerHTML = id;
   card.appendChild(storyDiv);
 
@@ -374,6 +589,13 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 		plannedForDiv.style.float = "right";
 		plannedForDiv.innerHTML = plannedFor;
 		card.appendChild(plannedForDiv);
+	}		
+
+	if(vmsSettings.burndownIndicator == 'true'){
+		//build an array with points, plannedFor, and resolutionDate
+		burndownArray.plannedPoints += Number.parseInt(points) ? Number.parseInt(points) : 0;
+		var points = (Number.parseInt(points) ? points : 0);
+		burndownArray.storyCards[burndownArray.storyCards.length] = {"story": id, "storyPoints": points, "plannedFor": plannedFor, "resolutionDate":resolutionDate};
 	}
 	
   document.getElementById(element).appendChild(a);
@@ -393,7 +615,11 @@ function addPointsToHeader(index,totalPoints) {
 	}
 	var h1 = document.getElementsByClassName("hdr")[index].getElementsByTagName("h1")[0];
 	//h1.textContent = h1.textContent + " ( " + total + " / " + Math.round((total/totalPoints)*100) + "%)";
-	h1.textContent = h1.textContent + " ( " + total + " pts )";
+	if(index == document.getElementsByClassName("vmsColumn").length - 1){
+		h1.textContent = h1.textContent + " ( " + total + " / " + totalPoints + " pts )";
+	} else {
+		h1.textContent = h1.textContent + " ( " + total + " pts )";
+	}
 	h1.setAttribute("header",h1.textContent);
 	h1.setAttribute("percent",Math.round((total/totalPoints)*100) + " %");
 	h1.onmouseenter = function(){ h1.textContent = h1.getAttribute("percent");};

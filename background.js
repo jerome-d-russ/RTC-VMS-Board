@@ -12,7 +12,8 @@ function getConfig(cb) {
 		rtcURL: '',
 		pointsIndicator: false,
 		burndownIndicator: false,
-		rrcFullscreenIndicator: false
+		rrcFullscreenIndicator: false,
+		version: 0
 	}, function (options) {
 		configCache = options;
 		cb(options);
@@ -104,20 +105,25 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 });
 
-if(!localStorage['version']){
-	localStorage['version'] = '1.26';
+// Upgrade versions
+getConfig(function (config) {
+	if (VERSION > config.version) {
+		chrome.storage.sync.set({
+			version: VERSION
+		}, function () {
 	chrome.tabs.create({url: 'options.html'});
-}
+		});
+	}
 
-if (localStorage['version'] != '1.26') {
-	localStorage['version'] = '1.26';
+	if (config.version < 126) {
 	chrome.notifications.create({
 	type: 'basic',
 	title: 'Build a Burndown Chart!!',
 	message: 'Is your VMS board for an iteration? Would you like to see it in burndown chart form? Now you can!',
 	iconUrl: 'icon-128.png'
 	});
-}
+	}
+});
 
 // migrate from older versions using localStorage
 if (localStorage.version) {

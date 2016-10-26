@@ -111,7 +111,7 @@ getConfig(function (config) {
 		chrome.storage.sync.set({
 			version: VERSION
 		}, function () {
-	chrome.tabs.create({url: 'options.html'});
+			chrome.runtime.openOptionsPage();
 		});
 	}
 

@@ -33,7 +33,8 @@
     "activeTab",
     "http://*/*",
     "https://*/*",
-    "notifications"
+    "notifications",
+    "storage"
   ],
   "icons": {
     "19": "icon-19.png",

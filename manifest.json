@@ -2,28 +2,39 @@
   "name": "RTC VMS Board",
   "version": "1.26",
   "description": "Take an RTC query and populates a VMS Board.",
-  "background": { 
-  	"scripts": ["background.js"],
-		"persistent": false
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
   },
-  "page_action" :
-  {
-    "default_icon" : "icon-19.png",
-    "default_title" : "Click to build the VMS Board!"
+  "page_action": {
+    "default_icon": "icon-19.png",
+    "default_title": "Click to build the VMS Board!"
   },
-  "web_accessible_resources": ["error_button.svg","pointing_finger.svg","refresh.svg","fullscreen.png","stop.svg","d3.min.js","sbd.js","sbd.css","goFullscreen.js"],
-	"options_page": "options.html",
-  "permissions" : [
+  "web_accessible_resources": [
+    "error_button.svg",
+    "pointing_finger.svg",
+    "refresh.svg",
+    "fullscreen.png",
+    "stop.svg",
+    "d3.min.js",
+    "sbd.js",
+    "sbd.css",
+    "goFullscreen.js"
+  ],
+  "options_page": "options.html",
+  "permissions": [
     "tabs",
     "activeTab",
-		"http://*/*", 
-		"https://*/*",
+    "http://*/*",
+    "https://*/*",
     "notifications"
   ],
-  "icons" : {
-    "19" : "icon-19.png",
-    "48" : "icon-48.png",
-    "128" : "icon-128.png"
+  "icons": {
+    "19": "icon-19.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
   },
   "manifest_version": 2
 }

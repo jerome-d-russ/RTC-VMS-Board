@@ -115,13 +115,13 @@ function buildVMSBoard(){
 	if (columns.id && columns.owner && columns.pts && columns.summary && columns.status){		
 		buildBaseVMSDiv();
 		populateCards(columns);
-    if(vmsSettings.burndownIndicator == 'true'){
+    if(vmsSettings.burndownIndicator === true){
       if (columns.pts && columns.plannedFor && columns.resolutionDate){
         //build the chart & initial JSON structure!
         buildBurndownData();
         buildBurndownDiv();
       } else {
-      	vmsSettings.burndownIndicator = 'false';
+      	vmsSettings.burndownIndicator = false;
         alert("You need the fields 'Story Points', 'Planned For' and 'Resolution Date' for the burndown chart!");
       }
     }
@@ -540,7 +540,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 	pointsDiv.style.float = "left";
 	if (isNaN(points)){
 		points = '[ _ ]';
-		if(vmsSettings.pointsIndicator == 'true'){
+		if(vmsSettings.pointsIndicator === true){
 			var pointImg = document.createElement("span");
 			pointImg.id = "pointImg";
 			var iconUrl = chrome.extension.getURL("pointing_finger.svg"); 
@@ -591,7 +591,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 		card.appendChild(plannedForDiv);
 	}		
 
-	if(vmsSettings.burndownIndicator == 'true'){
+	if(vmsSettings.burndownIndicator === true){
 		//build an array with points, plannedFor, and resolutionDate
 		burndownArray.plannedPoints += Number.parseInt(points) ? Number.parseInt(points) : 0;
 		var points = (Number.parseInt(points) ? points : 0);

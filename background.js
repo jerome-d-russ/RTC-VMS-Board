@@ -5,7 +5,7 @@
 var callbacks = [];
 var skipBuild = false;
 var configCache;
-var VERSION = 126;
+var VERSION = 127;
 
 function getConfig(cb) {
 	chrome.storage.sync.get({

@@ -1,6 +1,6 @@
 {
   "name": "RTC VMS Board",
-  "version": "1.26",
+  "version": "1.27",
   "description": "Take an RTC query and populates a VMS Board.",
   "background": {
     "scripts": [

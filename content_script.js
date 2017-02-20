@@ -48,12 +48,12 @@ function checkForExistingVMS(){
 			}, 1000);
 			if(itemsPerPage.value != "all"){
 				alert('RTC Limit of 500 story cards hit!\nVMS Board will not contain all story cards!');
-			}	
+			}
 		}
-	}	
+	}
 };
 
-function buildVMSBoard(){	
+function buildVMSBoard(){
   regexp = /.*&buildVMS/i;
 	winloc = window.location.toString();
   if (!winloc.match(regexp)) {
@@ -110,9 +110,9 @@ function buildVMSBoard(){
 				break;
 		}
 	};
-	
+
 	// URL For Testing: https://rtc.nwie.net/jazz/web/projects/Dev%20Center#action=com.ibm.team.workitem.runSavedQuery&id=_xoQlwK4vEeC1LvnjuDk1Mg
-	if (columns.id && columns.owner && columns.pts && columns.summary && columns.status){		
+	if (columns.id && columns.owner && columns.pts && columns.summary && columns.status){
 		buildBaseVMSDiv();
 		populateCards(columns);
     if(vmsSettings.burndownIndicator === true){
@@ -125,7 +125,7 @@ function buildVMSBoard(){
         alert("You need the fields 'Story Points', 'Planned For' and 'Resolution Date' for the burndown chart!");
       }
     }
-		resize();	
+		resize();
 	}else{
 		var fields = ""
 		if (!columns.id)
@@ -139,7 +139,7 @@ function buildVMSBoard(){
 		if (!columns.status)
 			fields = fields + "\nStatus";
 		alert("Missing the following fields:" + fields);
-	}		
+	}
 };
 
 function buildBurndownData(){
@@ -148,8 +148,8 @@ function buildBurndownData(){
 	burndownArray.timeDomain = buildTimeDomainOldToNew(burndownArray.start,burndownArray.end);
 	burndownArray.burndowns = getBurndowns(burndownArray.storyCards, Number.parseInt(burndownArray.plannedPoints));
 	burndownArray.burndowns.unshift({
-		"date": burndownArray.start, 
-		"points": Number.parseInt(burndownArray.plannedPoints), 
+		"date": burndownArray.start,
+		"points": Number.parseInt(burndownArray.plannedPoints),
 		"comment": "Start of Iteration!"
 	});
 	//get formatted current date
@@ -171,7 +171,7 @@ function buildBurndownData(){
 		}
 		if (!found){
 			burndownArray.burndowns.push({
-				"date": currentFormattedDate, 
+				"date": currentFormattedDate,
 				"points": burndownArray.burndowns[burndownArray.burndowns.length-1].points
 			});
 		}
@@ -267,7 +267,7 @@ function getBurndowns(storyCards, totPts){
 
 function buildBurndownDiv(){
 	var vmsDiv = document.getElementById("vmsDiv");
-	
+
 	sbdLink = document.createElement("link");
 	sbdLink.href = chrome.extension.getURL("sbd.css");
 	sbdLink.type = "text/css";
@@ -297,7 +297,7 @@ function buildBurndownDiv(){
 			this.style.height = "auto";
 			config = {
 				showGrid: false,
-				showComments: true, 
+				showComments: true,
 				margin: {top: 30, right: 50, bottom: 30, left: 50},
 				width: document.getElementById("chart").clientWidth,
 				height: document.getElementById("chart").clientHeight
@@ -311,7 +311,7 @@ function buildBurndownDiv(){
 			this.style.height = "50px";
 			config = {
 				showGrid: false,
-				showComments: false, 
+				showComments: false,
 				margin: {top:0,bottom:0,right:0,left:0},
 				width: document.getElementById("chart").clientWidth,
 				height: document.getElementById("chart").clientHeight
@@ -319,17 +319,17 @@ function buildBurndownDiv(){
 		}
 		console.log(burndownArray);
 		var bda = JSON.parse(JSON.stringify(burndownArray));
-		SBD.render(bda, config); 
-	}	
+		SBD.render(bda, config);
+	}
 	vmsDiv.appendChild(burndownDiv);
 	var bda = JSON.parse(JSON.stringify(burndownArray));
 	SBD.render(bda, {
 		showGrid: false,
-		showComments: false, 
+		showComments: false,
 		margin: {top:0,bottom:0,right:0,left:0},
 		width: document.getElementById("chart").clientWidth,
 		height: document.getElementById("chart").clientHeight
-	}); 
+	});
 };
 
 function populateCards(columns) {
@@ -362,7 +362,7 @@ function populateCards(columns) {
 			dependsOnAnchors = row.childNodes[columns.dependsOn].getElementsByTagName("a");
 			if (dependsOnAnchors) {
 				for(var j=0;j<dependsOnAnchors.length;j++){
-					dependsOn[dependsOn.length] = dependsOnAnchors[j].href; 
+					dependsOn[dependsOn.length] = dependsOnAnchors[j].href;
 				}
 			}
 		}
@@ -371,7 +371,7 @@ function populateCards(columns) {
 			blocksAnchors = row.childNodes[columns.blocks].getElementsByTagName("a");
 			if (blocksAnchors) {
 				for(var j=0;j<blocksAnchors.length;j++){
-					blocks[blocks.length] = blocksAnchors[j].href; 
+					blocks[blocks.length] = blocksAnchors[j].href;
 				}
 			}
 		}
@@ -391,20 +391,20 @@ function populateCards(columns) {
 		}
 	}
 	for (var i = 0, cols = document.getElementsByClassName("vmsColumn").length; i < cols; i++){
-			addPointsToHeader(i,totalPoints);
+		addPointsToHeader(i,totalPoints);
 	}
 	cards = document.getElementsByClassName("card");
 	cardText = new Array();
 	for (var i=0;i<cards.length;i++){
 		cardText[i] = cards[i].innerText;
 	}
-					
+
 };
 
 function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,plannedFo,resolutionDate){
   var element;
   switch(status){
-    case 'New':   
+    case 'New':
     case 'In Analysis':
     case 'Postpone':
     case 'Deferred':
@@ -439,13 +439,13 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 	card.id = id;
   card.className = "card";
 	if (blocked == "true"){
-		iconUrl = chrome.extension.getURL("stop.svg"); 
+		iconUrl = chrome.extension.getURL("stop.svg");
 		card.style.backgroundImage = "url('" + iconUrl + "')";
 		card.style.backgroundRepeat = "no-repeat";
 		card.style.backgroundSize = "contain";
 		card.style.backgroundPositionX = "50%";
 	}
-	
+
 	if (dependsOn.length > 0){
 		var top = 25;
 		for(var i = 0;i<dependsOn.length;i++){
@@ -468,17 +468,17 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 			dependsOnDiv.style.zIndex = "1";
 			dependsOnDiv.style.backgroundRepeat = "no-repeat";
 			dependsOnDiv.title = linkTo;
-			dependsOnDiv.onmouseover = function(){ 
+			dependsOnDiv.onmouseover = function(){
 				if (document.getElementById(this.getAttribute("linkTo"))) {
 					drawLine(this,document.getElementById(this.getAttribute("linkTo")));
 				} else {
 					this.style.border = "1px solid black";
 				}
 			};
-			dependsOnDiv.onmouseout = function(){ 
+			dependsOnDiv.onmouseout = function(){
 				if (document.getElementById(this.getAttribute("linkTo"))) {
 					if (document.getElementById("dependencyLine" + this.id)) {
-						document.getElementById("dependencyLine" + this.id).remove(); 
+						document.getElementById("dependencyLine" + this.id).remove();
 					}
 				} else {
 					this.style.border = "";
@@ -489,7 +489,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 			top += 5;
 		}
 	}
-	
+
 	if (blocks.length > 0){
 		var top = 25;
 		for(var i = 0;i<blocks.length;i++){
@@ -512,17 +512,17 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 			blocksDiv.style.zIndex = "1";
 			blocksDiv.style.backgroundRepeat = "no-repeat";
 			blocksDiv.title = linkTo;
-			blocksDiv.onmouseover = function(){ 
+			blocksDiv.onmouseover = function(){
 				if (document.getElementById(this.getAttribute("linkTo"))) {
 					drawLine(this,document.getElementById(this.getAttribute("linkTo")));
 				} else {
 					this.style.border = "1px solid black";
 				}
 			};
-			blocksDiv.onmouseout = function(){ 
+			blocksDiv.onmouseout = function(){
 				if (document.getElementById(this.getAttribute("linkTo"))) {
 					if (document.getElementById("dependencyLine" + this.id)) {
-						document.getElementById("dependencyLine" + this.id).remove(); 
+						document.getElementById("dependencyLine" + this.id).remove();
 					}
 				} else {
 					this.style.border = "";
@@ -543,7 +543,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 		if(vmsSettings.pointsIndicator === true){
 			var pointImg = document.createElement("span");
 			pointImg.id = "pointImg";
-			var iconUrl = chrome.extension.getURL("pointing_finger.svg"); 
+			var iconUrl = chrome.extension.getURL("pointing_finger.svg");
 			pointImg.style.backgroundImage = "url('" + iconUrl + "')";
 			pointImg.style.width = "inherit";
 			pointImg.style.height = "80%";
@@ -554,7 +554,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 			pointImg.style.backgroundRepeat = "no-repeat";
 			pointImg.style.backgroundSize = "contain";
 			pointImg.style.cursor = "pointer";
-			card.appendChild(pointImg);		
+			card.appendChild(pointImg);
 		}
 	}
   pointsDiv.innerHTML = "<h5 style='margin-top:0px'>" + points + " pts</h5>";
@@ -576,20 +576,20 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
   summaryDiv.className = "summary";
   summaryDiv.innerHTML = summary;
   card.appendChild(summaryDiv);
-	
+
 	if (team > ""){
 		var teamDiv = document.createElement("h5");
 		teamDiv.style.float = "left";
 		teamDiv.innerHTML = team;
 		card.appendChild(teamDiv);
 	}
-	
+
 	if (plannedFor > ""){
 		var plannedForDiv = document.createElement("h5");
 		plannedForDiv.style.float = "right";
 		plannedForDiv.innerHTML = plannedFor;
 		card.appendChild(plannedForDiv);
-	}		
+	}
 
 	if(vmsSettings.burndownIndicator === true){
 		//build an array with points, plannedFor, and resolutionDate
@@ -597,7 +597,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 		var points = (Number.parseInt(points) ? points : 0);
 		burndownArray.storyCards[burndownArray.storyCards.length] = {"story": id, "storyPoints": points, "plannedFor": plannedFor, "resolutionDate":resolutionDate};
 	}
-	
+
   document.getElementById(element).appendChild(a);
 };
 
@@ -611,7 +611,7 @@ function addPointsToHeader(index,totalPoints) {
 		if (isNaN(pts)){
 			pts = 0;
 		}
-		total += parseInt(pts);	
+		total += parseInt(pts);
 	}
 	var h1 = document.getElementsByClassName("hdr")[index].getElementsByTagName("h1")[0];
 	//h1.textContent = h1.textContent + " ( " + total + " / " + Math.round((total/totalPoints)*100) + "%)";
@@ -635,7 +635,7 @@ function resize() {
   for (var i = 0, max = document.styleSheets[0].cssRules.length; i < max; i++){
     if (document.styleSheets[0].cssRules[i].selectorText == ".container") {
       document.styleSheets[0].cssRules[i].style.height = dtlHeight + "px";
-      break;      
+      break;
     }
   }
 };
@@ -660,7 +660,7 @@ function buildBaseVMSDiv() {
 	vmsStyle.type = "text/css";
 	vmsStyle.id = "vmsStyle";
 	vmsStyle.innerHTML = ".containter { width: 100%; height: 100%; }"
-								+ ".vmsColumn { width: 25%; height: 100%; float: left; text-align: center;" 
+								+ ".vmsColumn { width: 25%; height: 100%; float: left; text-align: center;"
 								+ "border: 1px solid black; -webkit-box-sizing:border-box;"
 								+ "-moz-box-sizing: border-box; box-sizing: border-box; position: relative;"
 								+ "background-color: lavender; }"
@@ -671,7 +671,7 @@ function buildBaseVMSDiv() {
 								+ ".points { top: 5px; left: 5px; color: blue; }"
 								+ ".ownerName { top: 5px; right: 5px; color: blue; }"
 								+ ".colDetail { overflow: auto; height: 94%; }";
-	
+
 	var rtcStyle = document.createElement("style");
 	rtcStyle.id = "rtcStyle";
 	rtcStyle.type = "text/css";
@@ -679,7 +679,7 @@ function buildBaseVMSDiv() {
 								 + "html.jazz-ui body { min-width: 0px;}"
 			 					 + "* { margin: 0px; padding: 0px; overflow: hidden;}"
 								 + "a { text-decoration: none; color: black;}";
-	
+
 	var vmsDiv = document.createElement("div");
 	vmsDiv.id = "vmsDiv";
 	vmsDiv.style.position = "absolute";
@@ -687,14 +687,14 @@ function buildBaseVMSDiv() {
 	vmsDiv.style.top = "0px";
 	vmsDiv.style.width = "100%";
 	vmsDiv.style.height = "100%";
-	vmsDiv.innerHTML = '<div class="vmsColumn"><div class="hdr"><h1 style="font-size:2em;font-weight:bolder;margin:2px">Ready for Dev</h1><hr/></div><div id="backlog" class="colDetail"></div></div>' 
+	vmsDiv.innerHTML = '<div class="vmsColumn"><div class="hdr"><h1 style="font-size:2em;font-weight:bolder;margin:2px">Ready for Dev</h1><hr/></div><div id="backlog" class="colDetail"></div></div>'
 									 + '<div class="vmsColumn"><div class="hdr"><h1 style="font-size:2em;font-weight:bolder;margin:2px">In Dev</h1><hr/></div><div id="dev" class="colDetail"></div></div>'
 									 + '<div class="vmsColumn"><div class="hdr"><h1 style="font-size:2em;font-weight:bolder;margin:2px">Test</h1><hr/></div><div id="test" class="colDetail"></div></div>'
 									 + '<div class="vmsColumn"><div class="hdr"><h1 style="font-size:2em;font-weight:bolder;margin:2px">Done</h1><hr/></div><div id="done" class="colDetail"></div></div>';
-	
+
 	var closeImg = document.createElement("span");
 	closeImg.id = "frameImg";
-	iconUrl = chrome.extension.getURL("error_button.svg"); 
+	iconUrl = chrome.extension.getURL("error_button.svg");
 	closeImg.style.backgroundImage = "url('" + iconUrl + "')";
 	closeImg.style.width = "25px";
 	closeImg.style.height = "25px";
@@ -707,11 +707,11 @@ function buildBaseVMSDiv() {
 	closeImg.onclick = function(){
 		deleteVMSBoard();
 	}
-	vmsDiv.appendChild(closeImg);		
-	
+	vmsDiv.appendChild(closeImg);
+
 	var refreshImg = document.createElement("span");
 	refreshImg.id = "refreshImg";
-	iconUrl = chrome.extension.getURL("refresh.svg"); 
+	iconUrl = chrome.extension.getURL("refresh.svg");
 	refreshImg.style.backgroundImage = "url('" + iconUrl + "')";
 	refreshImg.style.width = "25px";
 	refreshImg.style.height = "25px";
@@ -729,11 +729,11 @@ function buildBaseVMSDiv() {
 			vmsSettings = response;
 			if (vmsSettings.added == true){
 				location.reload();
-			}			
+			}
 		});
 	}
-	vmsDiv.appendChild(refreshImg);		
-	
+	vmsDiv.appendChild(refreshImg);
+
 	bodyTag = document.getElementsByTagName("body")[0];
 	bodyTag.style.position = "absolute";
 	bodyTag.style.width = "100%";
@@ -741,9 +741,9 @@ function buildBaseVMSDiv() {
 	bodyTag.appendChild(vmsDiv);
 	bodyTag.appendChild(vmsStyle);
 	bodyTag.appendChild(rtcStyle);
-	
-	document.getElementById("net-jazz-ajax-WorkbenchRoot").style.visibility = "hidden";	
-	
+
+	document.getElementById("net-jazz-ajax-WorkbenchRoot").style.visibility = "hidden";
+
 	document.onkeydown = function(evt) {
 		evt = evt || window.event;
 		if (evt.keyCode == 27){
@@ -756,11 +756,11 @@ function buildBaseVMSDiv() {
 		}
 		//ctrl+alt+d
 		else if (evt.ctrlKey && evt.altKey && evt.keyCode == 68) {
-			showDependencies();				
+			showDependencies();
 		}
 		//ctrl+alt+p
 		else if (evt.ctrlKey && evt.altKey && evt.keyCode == 80) {
-			showPercentages();				
+			showPercentages();
 		}
 		//ctrl or alt
 		else if (evt.ctrlKey || evt.altKey){}
@@ -776,7 +776,7 @@ function buildBaseVMSDiv() {
 				tbDiv.style.right = "0px";
 				tbDiv.style.width = "100%";
 				tbDiv.style.height = document.getElementsByClassName("hdr")[0].clientHeight + "px";
-				
+
 				var tb = document.createElement("input");
 				tb.type = "textbox";
 				tb.style.position = "absolute";
@@ -800,8 +800,8 @@ function buildBaseVMSDiv() {
 						}
 					}
 				}
-				tbDiv.appendChild(tb);						
-				tb.focus();	
+				tbDiv.appendChild(tb);
+				tb.focus();
 			}
 		}
 	};
@@ -826,7 +826,7 @@ function drawDependencies() {
 	for (var i=0;i<dependents.length;i++){
 		if (document.getElementById(dependents[i].getAttribute("linkTo"))) {
 			drawLine(dependents[i],document.getElementById(dependents[i].getAttribute("linkTo")));
-		}	
+		}
 	}
 };
 
@@ -846,7 +846,7 @@ function showPercentages() {
 		var element = columns[i].getElementsByTagName("h1")[0];
 		if (element) {
 			element.textContent = element.getAttribute("percent");
-		}	
+		}
 	}
 	setTimeout(function(){
 		var columns = document.getElementsByClassName("hdr");
@@ -854,30 +854,30 @@ function showPercentages() {
 			var element = columns[i].getElementsByTagName("h1")[0];
 			if (element) {
 				element.textContent = element.getAttribute("header");
-			}	
+			}
 		}
 	}, 5000);
 };
 
 // from http://stackoverflow.com/questions/4270485/drawing-lines-on-html-page
-function drawLine(from,to){	
-	
+function drawLine(from,to){
+
 	var pos = getPos(from);
 	var x1 = pos.x + (from.clientWidth/2);
 	var y1 = pos.y + (from.clientHeight/2);
-	
+
 	var pos = getPos(to);
 	var x2 = pos.x + (to.clientWidth/2);
 	var y2 = pos.y + (to.clientHeight/2);
-	
+
 	var offsets = from.getBoundingClientRect();
 	var x1 = offsets.left + (from.clientWidth/2);
 	var y1 = offsets.top + (from.clientHeight/2);
-	
+
 	var offsets = to.getBoundingClientRect();
 	var x2 = offsets.left + (to.clientWidth/2);
 	var y2 = offsets.top + (to.clientHeight/2);
-	
+
 	if(y1 < y2){
 			var pom = y1;
 			y1 = y2;
@@ -916,7 +916,7 @@ function drawLine(from,to){
 	div.style.top = y + "px";
 	div.style.left = x + "px";
 	div.style.transform = "rotate(" + deg + "deg)";
-	
+
 	document.getElementById("vmsDiv").appendChild(div);
 };
 // from http://stackoverflow.com/questions/288699/get-the-position-of-a-div-span-tag

@@ -603,6 +603,7 @@ function buildCard(id,owner,points,summary,status,blocked,dependsOn,blocks,team,
 
 function addPointsToHeader(index,totalPoints) {
 	var points = document.getElementsByClassName("colDetail")[index].getElementsByClassName("points");
+	var numberOfCards = points.length;
 	var total = 0;
 	for(var i=0;i<points.length;i++){
 		var text = points[i].textContent;
@@ -614,14 +615,13 @@ function addPointsToHeader(index,totalPoints) {
 		total += parseInt(pts);
 	}
 	var h1 = document.getElementsByClassName("hdr")[index].getElementsByTagName("h1")[0];
-	//h1.textContent = h1.textContent + " ( " + total + " / " + Math.round((total/totalPoints)*100) + "%)";
 	if(index == document.getElementsByClassName("vmsColumn").length - 1){
 		h1.textContent = h1.textContent + " ( " + total + " / " + totalPoints + " pts )";
 	} else {
 		h1.textContent = h1.textContent + " ( " + total + " pts )";
 	}
 	h1.setAttribute("header",h1.textContent);
-	h1.setAttribute("percent",Math.round((total/totalPoints)*100) + " %");
+	h1.setAttribute("percent",Math.round((total/totalPoints)*100) + " % ( " + numberOfCards + " cards )");
 	h1.onmouseenter = function(){ h1.textContent = h1.getAttribute("percent");};
 	h1.onmouseleave = function(){ h1.textContent = h1.getAttribute("header");};
 };
